@@ -1,0 +1,32 @@
+.env
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+.ipynb_checkpoints/
+
+.pytest_cache/
+
+# Ambientes virtuais
+.env/
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Arquivos de configuração de ferramentas
+*.env
+
+# Arquivos de log
+*.log
+
+# Arquivos da automacao
+src/pages/callix/users.py
+secrets/
+
+# Arquivos do airflow
+airflow/logs/
