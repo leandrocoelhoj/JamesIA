@@ -3,14 +3,14 @@ from src.pages.callix.xpaths import supervisor_profile_list, perfil_acess_paths,
 from time import sleep
 
 class AccessProfilesPage(BasePage):
-    def __init__(self, config, drive):
+    def __init__(self, config, driver):
         """
         Create Access Profiles.
 
         Args:
             config: Configuration object containing necessary settings
         """
-        super().__init__(config, drive)
+        super().__init__(config, driver)
         self.base_url = config.get_base_url()
 
     def navigate_to_access_profiles(self):

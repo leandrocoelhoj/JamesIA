@@ -60,3 +60,23 @@ class IpboxConfig:
         elif self.site == 3:
             return "https://contech3.ipboxcloud.com.br:9972/"
 
+class GsolutionConfig:
+    def __init__(self):
+        """
+        Inicializa a configuração para uma equipe específica.
+
+        Args:
+            team_name (str): Nome da equipe, utilizado para construir a URL.
+        """
+        self.user = os.getenv("GSOLUTION_USER")
+        self.password = os.getenv("GSOLUTION_PASSWORD")
+
+    def get_base_url(self) -> str:
+        """
+        Constrói e retorna a URL base para a equipe.
+
+        Returns:
+            str: URL no formato "https://{team_name.lower()}.callix.com.br/"
+        """
+        return "https://sip3.solutionsvoip.com.br/painel/index.php"
+

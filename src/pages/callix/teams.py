@@ -1,5 +1,6 @@
 from src.core.base_page import BasePage
 from src.pages.callix.xpaths import teams_paths, callix_page
+from time import sleep
 
 
 class TeamPage(BasePage):
@@ -32,6 +33,7 @@ class TeamPage(BasePage):
         self.select_option_by_text(teams_paths['supervisor_group_select'], 'Grupo de supervisão padrão')
 
     def _set_route(self):
+        sleep(5)
         self.wait_for_clickable(teams_paths['manual_route_button']).click()
         self.select_option_by_text(teams_paths['manual_route_selection'], "#Geral - VenditoreBLF_Manual (Tech: 6014)")
 

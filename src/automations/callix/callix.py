@@ -43,11 +43,11 @@ def run_callix_automation_route(url, users_name, qtd, crm: str, route):
     users_page.update_all_passwords(user_name=users_name, qtd=qtd)
     integration.run_ramal(crm=crm, agencia=34732, users=users)
     campaign_models.create_form_campaign(crm=crm)
-    campaigns_page.create_campaign(crm=crm)
+    campaigns_page.create_campaign(crm=crm, team_name=url)
     api_tokens.create_api_token()
     account_data.add_route(route)
     input('Finalizado')
 
 
 if __name__ == "__main__":
-   run_callix_automation_route(url='priscilafacilecontech', users_name='priscila', qtd=1, crm='vanguard', route='#Geral - VenditoreBLM (Tech: 5006)')
+   run_callix_automation_route(url='universocontech', users_name='universo', qtd=5, crm='vanguard', route='#Geral - VenditoreBLM (Tech: 5006)')
