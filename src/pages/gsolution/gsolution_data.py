@@ -1,6 +1,6 @@
 from src.core.base_page import BasePage
 from selenium.webdriver.common.by import By
-from xpaths import *
+from src.pages.gsolution.xpaths import *
 
 class GsolutionData(BasePage):
     def __init__(self, config, driver):
@@ -43,7 +43,6 @@ class GsolutionData(BasePage):
                 ("Lucratividade", '//*[@id="site"]/table/tbody/tr/td/table/tbody/tr[2]/th[7]'),
                 ("Rentabilidade", '//*[@id="site"]/table/tbody/tr/td/table/tbody/tr[2]/th[8]')
             ]
-
             cabecalhos = {campo: obter_texto(driver, xpath) for campo, xpath in campos}
             cabecalhos["Dados"] = dados_tabela
 

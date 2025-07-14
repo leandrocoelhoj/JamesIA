@@ -1,6 +1,7 @@
 from src.config.settings import IpboxConfig, CallixConfig, GsolutionConfig
 from src.auth.callix_auth import CallixAuthPage
 from src.auth.ipbox_auth import IpboxAuthPage
+from src.auth.gsolution_auth import GsolutionAuthPage
 from time import sleep
 
 def authenticate_system(system: str, driver, **kwargs):
@@ -51,8 +52,9 @@ def authenticate_system(system: str, driver, **kwargs):
     elif system == "gsolution":
 
         config = GsolutionConfig()
-        auth_page = config.get_base_url()
-
+        auth_page = GsolutionAuthPage(config, driver)
+        auth_page.login_gsolution()
+        return config
 
     else:
         raise ValueError(f"Unsupported system: '{system}'. Expected 'callix' or 'ipbox'.")

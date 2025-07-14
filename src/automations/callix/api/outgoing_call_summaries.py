@@ -1,5 +1,6 @@
 import requests
 import datetime
+from teste import teste
 
 def fetch_outgoing_call_summaries(subdomain, token):
     #token = (Logica pra pegar o token dentro do banco de dados, se não existir, levantar uma exceção pra colocarmos manualmente la)
@@ -27,7 +28,15 @@ def fetch_outgoing_call_summaries(subdomain, token):
     return response
 
 if __name__ == "__main__":
-    subdomain = 'rdfcontech'
-    token = 'c43c806e-9bfc-4a8e-8464-96ee11501cae'
-    resposta = fetch_outgoing_call_summaries(subdomain=subdomain, token=token)
-    print(resposta)
+
+    relatorios = []
+    for domain in teste:
+        #print(domain['domain'], domain['token'][0])
+        resposta = fetch_outgoing_call_summaries(subdomain=domain['domain'], token=domain['token'][0])
+        relatorios.append(resposta)
+    print(relatorios)
+
+        # subdomain = 'rdfcontech'
+        # token = 'c43c806e-9bfc-4a8e-8464-96ee11501cae'
+        # resposta = fetch_outgoing_call_summaries(subdomain=subdomain, token=token)
+        # print(resposta)

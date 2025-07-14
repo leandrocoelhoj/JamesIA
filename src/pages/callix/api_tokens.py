@@ -42,4 +42,5 @@ class TokenApiPage(BasePage):
 
     def read_tokens(self):
         self._navigate_to_api_token()
-        self._read_tokens()
+        tokens = self._read_tokens()
+        return tokens

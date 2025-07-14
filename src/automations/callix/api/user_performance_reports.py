@@ -1,6 +1,7 @@
 import requests
 import datetime
-from src.core.storage_saver import save_json_to_gcs
+from teste import teste
+#from src.core.storage_saver import save_json_to_gcs
 
 def get_user_performance_reports(subdomain, token):
     #token = (Logica pra pegar o token dentro do banco de dados, se não existir, levantar uma exceção pra colocarmos manualmente la)
@@ -30,14 +31,20 @@ def get_user_performance_reports(subdomain, token):
 
 
 if __name__ == "__main__":
-    subdomain = 'rdfcontech'
-    token = 'c43c806e-9bfc-4a8e-8464-96ee11501cae'
-    resposta = fetch_user_performance_reports(subdomain=subdomain, token=token)
-    print(resposta)
-
-    save_json_to_gcs(
-        bucket_name="jamesia_datalake",
-        module="callix",
-        endpoint="outgoing_call_summaries",
-        data=resposta
-    )
+    relatorios = []
+    for domain in teste:
+        # print(domain['domain'], domain['token'][0])
+        resposta = get_user_performance_reports(subdomain=domain['domain'], token=domain['token'][0])
+        relatorios.append(resposta)
+    print(relatorios)
+    # subdomain = 'rdfcontech'
+    # token = 'c43c806e-9bfc-4a8e-8464-96ee11501cae'
+    # resposta = fetch_user_performance_reports(subdomain=subdomain, token=token)
+    # print(resposta)
+    #
+    # save_json_to_gcs(
+    #     bucket_name="jamesia_datalake",
+    #     module="callix",
+    #     endpoint="outgoing_call_summaries",
+    #     data=resposta
+    # )
