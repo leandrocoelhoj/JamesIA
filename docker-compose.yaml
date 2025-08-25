@@ -68,11 +68,37 @@ services:
       start_period: 30s
     restart: always
 
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *airflow-common-env
+      # Evita loop de login (defina um valor fixo no .env)
+      AIRFLOW__WEBSERVER__SECRET_KEY: "${AIRFLOW_WEBSERVER_SECRET_KEY}"
+      # Use o host/porta reais que você acessa
+      AIRFLOW__WEBSERVER__BASE_URL: "${AIRFLOW_WEBSERVER_BASE_URL:-http://10.166.1.145:8080}"
+      # Se estiver sem HTTPS direto, mantenha assim:
+      AIRFLOW__WEBSERVER__COOKIE_SECURE: "False"
+      AIRFLOW__WEBSERVER__COOKIE_SAMESITE: "Lax"
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+
   airflow-apiserver:
     <<: *airflow-common
     command: api-server -w 1
-    ports:
-      - "8080:8080"
+#    ports:
+#      - "8080:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
       interval: 30s
