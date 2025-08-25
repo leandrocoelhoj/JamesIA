@@ -20,40 +20,45 @@ class SubAccountPage(BasePage):
         self.driver.get(users_url)
         #self.wait_for_element(callix_page['page_loaded'])
 
-    def get_all_subdomains_data_info(self):
+    def _get_all_subdomains_data_info(self):
+        import logging
         domains_list = []
         sleep(1)
         try:
-            self.wait_for_element('//*[@id="__next"]/div/div[1]/button')
-            self.wait_for_element('//*[@id="__next"]/div/div[1]/button').click()
+            logging.info("Esperando tabela de domínios aparecer na página.")
             self.wait_for_element('//*[@id="__next"]/div/div[3]/div[2]/div/div[2]/div[1]/table/tbody/tr[1]/td[2]')
             domains_list.extend(self._get_subdomains_data_info())
+            logging.info("Primeira página coletada com sucesso.")
         except Exception as e:
-            print("Erro ao enviar dados:", e)
+            logging.error(f"Erro ao enviar dados na primeira página: {e}")
             raise
 
+        page_number = 1
         while True:
             try:
-                botao_avancar = self.driver.find_element(By.XPATH,
-                                                         '//*[@id="__next"]/div/div[3]/div[2]/div/div[3]/div[2]/button[3]')
-
-                # Verifica se o botão está habilitado
+                botao_avancar = self.driver.find_element(
+                    By.XPATH, '//*[@id="__next"]/div/div[3]/div[2]/div/div[3]/div[2]/button[3]'
+                )
                 if 'disabled' in botao_avancar.get_attribute('class') or botao_avancar.get_attribute('disabled'):
-                    print("O botão está desabilitado. Fim da paginação.")
+                    logging.info(f"O botão está desabilitado. Fim da paginação na página {page_number}.")
                     break
-
-                botao_avancar.click()
-
-                # Espera o carregamento da próxima página
-                self.wait_for_element('//*[@id="__next"]/div/div[3]/div[2]/div/div[2]/div[1]/table/tbody/tr[1]/td[2]')
-
-                # Coleta os dados da nova página e adiciona na lista
-                domains_list.extend(self._get_subdomains_data_info())
-
+                else:
+                    botao_avancar.click()
+                    logging.info(f"Avançando para a próxima página ({page_number + 1}).")
             except Exception as e:
-                print("Erro ao processar paginação:", e)
+                logging.error(f"Erro ao processar paginação na página {page_number}: {e}")
                 break
 
+            try:
+                self.wait_for_element('//*[@id="__next"]/div/div[3]/div[2]/div/div[2]/div[1]/table/tbody/tr[1]/td[2]')
+                domains_list.extend(self._get_subdomains_data_info())
+                logging.info(f"Página {page_number + 1} coletada com sucesso.")
+                page_number += 1
+            except Exception as e:
+                logging.error(f"Erro ao coletar dados na página {page_number}: {e}")
+                break
+
+        logging.info(f"Paginação concluída. Total de domínios coletados: {len(domains_list)}")
         return domains_list
 
     def _get_subdomains_data_info(self):
@@ -65,33 +70,42 @@ class SubAccountPage(BasePage):
 
         for index, row in enumerate(rows, start=1):
             try:
-                domain_name = row.find_element(By.XPATH, './td[1]').text
-                domain_link = row.find_element(By.XPATH, './td[2]/a').text
-                domain_status = row.find_element(By.XPATH, './td[3]').text
-                domain_pas = row.find_element(By.XPATH, './td[4]').text
-                domain_ramais = row.find_element(By.XPATH, './td[5]').text
-                domain_data_entrada = row.find_element(By.XPATH, './td[7]').text
+                team_name = row.find_element(By.XPATH, './td[1]').text
+
+                if row.find_element(By.XPATH, './td[2]'):
+                    domain = row.find_element(By.XPATH, './td[2]').text
+                else:
+                    domain = row.find_element(By.XPATH, './td[2]/a').text
+
+                team_status = row.find_element(By.XPATH, './td[3]').text
+                team_pas = row.find_element(By.XPATH, './td[4]').text
+                team_ramais = row.find_element(By.XPATH, './td[5]').text
+                team_data_entrada = row.find_element(By.XPATH, './td[7]').text
+
+                "td[2]"
 
                 domain_info = {
-                    "domain": domain_name,
-                    "domain_link": domain_link.strip(),
-                    "status": domain_status,
-                    "pas": domain_pas,
-                    "ramais": domain_ramais,
-                    "data-entrada": domain_data_entrada
+                    "equipe": team_name,
+                    "dominio": domain.strip(),
+                    "status": team_status,
+                    "pas": team_pas,
+                    "ramais": team_ramais,
+                    "data-entrada": team_data_entrada
                 }
 
                 domains_list.append(domain_info)
 
             except Exception as e:
-                print(f"Erro ao processar a linha {index}: {e}")
+                msg = str(e).split('\n')[0]
+                print(f"Erro ao processar a linha {index}: {msg}")
                 continue
 
         return domains_list
 
     def get_domains(self):
         self.navigate_to_sub_accounts()
-        domains_list = self._get_subdomains_data_info()
+        self.wait_for_clickable('//*[@id="__next"]/div/div[1]/button').click()
+        domains_list = self._get_all_subdomains_data_info()
         return domains_list
 
 

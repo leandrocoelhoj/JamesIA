@@ -1,8 +1,8 @@
 x-airflow-common:
   &airflow-common
   image: jamesia/airflow:3.0.0-selenium
-#  extra_hosts:
-#    - "host.docker.internal:host-gateway"
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
   dns:
     - 8.8.8.8
     - 1.1.1.1
@@ -10,10 +10,10 @@ x-airflow-common:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
     #AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
     #AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
-    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__FERNET_KEY: 'MIHcZgo767EuVG9sXPvQD8bqS3cS2hDNr79Ytf3ofqA='
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/execution/'
@@ -36,15 +36,16 @@ x-airflow-common:
       source: ${AIRFLOW_PROJ_DIR:-.}
       target: /src
   user: "${AIRFLOW_UID:-50000}:0"
+  networks: [james-net]
   depends_on:
     &airflow-common-depends-on
     redis:
       condition: service_healthy
-    postgres:
+    airflow-postgres:
       condition: service_healthy
 
 services:
-  postgres:
+  airflow-postgres:
     image: postgres:13
     environment:
       POSTGRES_USER: airflow
@@ -52,6 +53,7 @@ services:
       POSTGRES_DB: airflow
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
+    networks: [james-net]
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 10s
@@ -63,6 +65,7 @@ services:
     image: redis:7.2-bookworm
     expose:
       - 6379
+    networks: [james-net]
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -159,7 +162,6 @@ services:
     <<: *airflow-common
     entrypoint: /bin/bash
     command: /scripts/airflow-init.sh
-
     environment:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: 'true'
@@ -183,24 +185,28 @@ services:
     depends_on:
       <<: *airflow-common-depends-on
 
-  flower:
-    <<: *airflow-common
-    command: celery flower
-    profiles:
-      - flower
-    ports:
-      - "5555:5555"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    restart: always
-    depends_on:
-      <<: *airflow-common-depends-on
-      airflow-init:
-        condition: service_completed_successfully
+#  flower:
+#    <<: *airflow-common
+#    command: celery flower
+#    profiles:
+#      - flower
+#    ports:
+#      - "5555:5555"
+#    healthcheck:
+#      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#      start_period: 30s
+#    restart: always
+#    depends_on:
+#      <<: *airflow-common-depends-on
+#      airflow-init:
+#        condition: service_completed_successfully
 
 volumes:
   postgres-db-volume:
+
+networks:
+  james-net:
+    external: true

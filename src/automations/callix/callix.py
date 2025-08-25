@@ -24,6 +24,7 @@ def run_callix_automation_route(url, users_name, qtd, crm: str, route):
     :return: json usuários
     """
     driver = webdriver.Chrome()
+    input()
     config = authenticate_system("callix", driver, team_name=url)
     #config = authenticate_callix(driver, url)
 
@@ -36,18 +37,18 @@ def run_callix_automation_route(url, users_name, qtd, crm: str, route):
     integration = AddIntegrations(config, driver)
     api_tokens = TokenApiPage(config, driver)
 
-    access_profiles.create_access_profiles()
+    #access_profiles.create_access_profiles()
     teams_page.create_teams(url)
-    users_page.create_adm_user()
+    #users_page.create_adm_user()
     users = users_page.create_users(user_name=users_name, qtd=qtd)
     users_page.update_all_passwords(user_name=users_name, qtd=qtd)
     integration.run_ramal(crm=crm, agencia=34732, users=users)
     campaign_models.create_form_campaign(crm=crm)
     campaigns_page.create_campaign(crm=crm, team_name=url)
     api_tokens.create_api_token()
-    account_data.add_route(route)
+    #account_data.add_route(route)
     input('Finalizado')
 
 
 if __name__ == "__main__":
-   run_callix_automation_route(url='universocontech', users_name='universo', qtd=5, crm='vanguard', route='#Geral - VenditoreBLM (Tech: 5006)')
+   run_callix_automation_route(url='renovarcontech', users_name='renovar', qtd=10, crm='vanguard', route='#Geral - VenditoreBLM (Tech: 5006)')

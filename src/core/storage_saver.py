@@ -1,12 +1,10 @@
 from google.cloud import storage
 import json
-from datetime import datetime
 from pathlib import Path
 
 
-def save_json_to_gcs(bucket_name: str, module: str, endpoint: str, data: dict):
-    date_str = datetime.now().strftime('%Y-%m-%d')
-    filename = f"{module}/{endpoint}/{date_str}.json"
+def save_json_to_gcs(bucket_name: str, module: str, endpoint: str, domain: str, data: dict, date_str: str):
+    filename = f"{module}/{endpoint}/{domain}/{date_str}.json"
 
     PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -16,4 +14,4 @@ def save_json_to_gcs(bucket_name: str, module: str, endpoint: str, data: dict):
     blob = bucket.blob(filename)
 
     blob.upload_from_string(json.dumps(data, ensure_ascii=False, indent=2), content_type='application/json')
-    print(f"✔ Dados salvos em: gs://{bucket_name}/{filename}/{endpoint}/{date_str}.json")
+    print(f"✔ Dados salvos em: gs://{bucket_name}/{filename}")

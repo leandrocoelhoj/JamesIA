@@ -16,15 +16,15 @@ class BasePage:
         """
         self.config = config
         self.driver = driver
-        self.wait = WebDriverWait(self.driver, 20)
+        self.wait = WebDriverWait(self.driver, 50)
 
     def wait_for_element(self, locator):
         """Wait for an element to be present and return it."""
-        return WebDriverWait(self.driver, 20).until(EC.presence_of_element_located((By.XPATH, f"{locator}")))
+        return WebDriverWait(self.driver, 60).until(EC.presence_of_element_located((By.XPATH, f"{locator}")))
 
     def wait_for_clickable(self, locator):
         """Wait for an element to be clickable and."""
-        return WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, f"{locator}")))
+        return WebDriverWait(self.driver, 60).until(EC.element_to_be_clickable((By.XPATH, f"{locator}")))
 
     def select_option_by_text(self, locator, text):
         """Select an option from a dropdown by visible text."""

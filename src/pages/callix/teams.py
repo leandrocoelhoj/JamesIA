@@ -34,8 +34,10 @@ class TeamPage(BasePage):
 
     def _set_route(self):
         sleep(5)
-        self.wait_for_clickable(teams_paths['manual_route_button']).click()
-        self.select_option_by_text(teams_paths['manual_route_selection'], "#Geral - VenditoreBLF_Manual (Tech: 6014)")
+        #self.wait_for_clickable(teams_paths['manual_route_button']).click()
+        manual_click = self.driver.find_element('xpath', teams_paths['manual_route_button'])
+        self.driver.execute_script('arguments[0].click();', manual_click)
+        #self.select_option_by_text(teams_paths['manual_route_selection'], "#Geral - VenditoreBLF_Manual (Tech: 6014)")
 
     def _team_name(self, team_name):
         return self.find_element_and_send_keys(teams_paths['team_name_input'], f"{team_name.capitalize()} 01")
@@ -47,5 +49,5 @@ class TeamPage(BasePage):
 
         self._team_name(team_name)
         self._configure_dropdown()
-        self._set_route()
+        #self._set_route()
         self.wait_for_clickable(teams_paths['confirm_button']).click()

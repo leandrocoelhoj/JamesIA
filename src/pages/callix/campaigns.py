@@ -117,3 +117,39 @@ class CampaignPage(BasePage):
     def _access_campaign(self, campaign_link):
         self.driver.get(campaign_link)
         self.wait_for_element(callix_page['page_loaded'])
+
+    def _get_campaign_agress(self):
+        self.wait_for_element(campaign_paths['campaign_name'])
+        agress = self.driver.find_element('xpath', campaign_paths['attempts_input'])
+        return agress.get_attribute('value')
+
+    def _get_campaign_name(self):
+        self.wait_for_element(campaign_paths['campaign_name'])
+        campaign_name = self.driver.find_element('xpath', campaign_paths['campaign_name'])
+        return campaign_name.get_attribute('value')
+
+    def scrap_campaigns(self):
+        campaigns_agress_scrap = []
+
+        campaign_links = self._scrap_campaign_quantity()
+        for campaign in campaign_links:
+            self._access_campaign(campaign)
+            try:
+                self.wait_for_element(campaign_paths['campaign_name'])
+                try:
+                    campaign_name = self._get_campaign_name()
+                    campaign_agress = self._get_campaign_agress()
+
+                    campaign_dict = {
+                        'campaign_name': campaign_name,
+                        'campaign_agress': campaign_agress,
+                    }
+                    campaigns_agress_scrap.append(campaign_dict)
+
+                except Exception as e:
+                    print(f'Erro ao puxar: {e}')
+            except:
+                print('Não foi possível puxar a campanha')
+                pass
+
+        return campaigns_agress_scrap
